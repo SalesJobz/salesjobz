@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+	<head>
+    <title>AWS S3 File Upload</title>
+	<script src="https://sdk.amazonaws.com/js/aws-sdk-2.2.32.min.js"></script>
+	</head>
+	<body>
+		<input type="file" id="file-chooser" /> 
+		<button id="upload-button">Upload to S3</button>
+		<div id="results"></div>
+
+		<script type="text/javascript">
+
+			// Initialize the Amazon Cognito credentials provider
+			AWS.config.region = 'us-east-1'; // Region
+			AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+				IdentityPoolId: 'us-east-1:64584e10-5ebd-4b06-a822-bd0101b2c394',
+			});
+			AWS.config.credentials.get(function(err) {
+				if (err) alert(err);
+				console.log(AWS.config.credentials);
+			});
+			
+		  var bucket = new AWS.S3({region: 'us-west-2', maxRetries: 15,params: {Bucket: 'sj-resume'}});
+
+		  var fileChooser = document.getElementById('file-chooser');
+		  var button = document.getElementById('upload-button');
+		  var results = document.getElementById('results');
+		  button.addEventListener('click', function() {
+			var file = fileChooser.files[0];
+			if (file) {
+			  results.innerHTML = '';
+
+			  var params = {Key: file.name, ContentType: file.type, Body: file};
+			  bucket.upload(params, function (err, data) {
+				results.innerHTML = err ? 'ERROR!' : 'UPLOADED.';
+			  });
+			} else {
+			  results.innerHTML = 'Nothing to upload.';
+			}
+		  }, false);
+		</script>
+	</body>
+
+</html>
