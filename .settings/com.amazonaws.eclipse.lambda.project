@@ -1,0 +1,6 @@
+#Lambda Function Project Metadata
+#Sun Jan 24 17:32:21 IST 2016
+lastDeploymentFunctionName=SalesJobzFunction
+lastDeploymentBucketName=sj-lambda-code
+lastDeploymentEndpoint=https\://lambda.us-west-2.amazonaws.com/
+lastInvokeInput={"method"\:"signUp","id"\:"snsekar@gmail.com","email"\:"snsekar@gmail.com","password"\:"123"}
