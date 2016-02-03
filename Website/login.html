@@ -39,7 +39,7 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
 	    <!--/.navbar-header-->
 	    <div class="navbar-collapse collapse" id="bs-example-navbar-collapse-1" style="height: 1px;">
 	        <ul class="nav navbar-nav">
-		        <li class="dropdown">
+		       <!--  <li class="dropdown">
 		            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Jobs<b class="caret"></b></a>
 		            <ul class="dropdown-menu">
 			            <li><a href="location.html">Contract Jobs</a></li>
@@ -114,8 +114,13 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
 			            <li><a href="jobs.html">Research Jobs</a></li>
 			            <li><a href="jobs.html">Defence Jobs</a></li>
 		            </ul>
-		        </li>
-		        <li><a href="login.html">Login</a></li>
+		        </li> -->
+		        <li id = "login_wrapper"><a href="login.html">Login</a></li>
+		        <li id = "signup_wrapper"><a href="signup.html">New user Signup!</a></li>
+		      
+		      	<li id = "profile_picture_wrapper"><a href="profile.html"><img id="profile_picture"src="images/user-default.png" style="width:50px" alt=""/></a></li>
+		        <li id = "user_name_wrapper"><a href="profile.html"><span id = "user_name" ></span></a></li>
+		        <li id = "logout_wrapper"><a href="logout.html">Logout</a></li>
 		     <!--    <li><a href="resume.html">Upload Resume</a></li> -->
 	        </ul>
 	    </div>
@@ -123,7 +128,7 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
 	  </div>
 	    <!--/.navbar-collapse-->
 	</nav>
-<div class="banner_1">
+<!-- <div class="banner_1">
 	<div class="container">
 		<div id="search_wrapper1">
 		   <div id="search_form" class="clearfix">
@@ -136,7 +141,7 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
            </div>
 		</div>
    </div> 
-</div>	
+</div> -->	
 <div class="container">
     <div class="single">  
 	
@@ -150,13 +155,13 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
                         <div class="textbox-wrap">
                             <div class="input-group">
                                 <span class="input-group-addon "><i class="fa fa-user"></i></span>
-                                <input type="text" required="required" class="form-control" placeholder="Email">
+                                <input id= "email" type="text" required="required" class="form-control" placeholder="Email">
                             </div>
                         </div>
                         <div class="textbox-wrap">
                             <div class="input-group">
                                 <span class="input-group-addon "><i class="fa fa-key"></i></span>
-                                <input type="password" required="required" class="form-control " placeholder="Password">
+                                <input id="password" type="password" required="required" class="form-control " placeholder="Password">
                             </div>
                         </div>
                      </form>
@@ -171,7 +176,7 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
 			        </div>
 			        <span>
 					<div class="login-btn">
-					   <input type="submit" value="Log in">				
+					   <input id = "loginbutton" type="submit" value="Log in">				
 					   <a href="signup.html"><input type="submit" value="Create new account"></a>
 					</div>
 					</span>
@@ -274,5 +279,68 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
 	</div>
   </div>
 </div>
+<script>
+if (localStorage.getItem("sj_userid") === null) {
+	
+	$("#profile_picture_wrapper").hide();
+	$("#user_name_wrapper").hide();
+	$("#logout_wrapper").hide();
+	}else{
+		$("#login_wrapper").hide();
+		$("#signup_wrapper").hide();		
+	
+		$("#user_name").text(localStorage.getItem("sj_username"));
+		$("#profile_picture").attr("src", localStorage.getItem("sj_userprofilepicture"));
+	}
+	
+	$("#loginbutton").click(function( event ) {
+	
+		
+		 var em = $("#email").val();
+		 var pwd = $("#password").val();
+
+ 		$.post( "https://lxa3sc7v79.execute-api.us-west-2.amazonaws.com/prod/salesjobz",JSON.stringify({"method":"signIn","id": em,"access_token":pwd}))
+		  .done(function( data ) {
+		    //alert(JSON.stringify(data ));
+		    if(data.status == "ok"){
+		    	//alert("SignIn success!");
+		    	 		$.post( "https://lxa3sc7v79.execute-api.us-west-2.amazonaws.com/prod/salesjobz",JSON.stringify({"method":"getCandidateProfile","id": em}))
+						  .done(function( data ) {
+		  				  //alert(JSON.stringify(data ));
+		   					 if(data.status == "ok"){
+		   						 var userInfo = JSON.parse(data.db_result).Items[0];
+		   					
+		   				    	if (typeof(Storage) !== "undefined") {
+		   						    // Store
+	//	   						    localStorage.setItem("sj_usertype", em);
+		   						    localStorage.setItem("sj_userid", userInfo.id.S);
+		   						    localStorage.setItem("sj_username", userInfo.first_name.S);
+		   						    localStorage.setItem("sj_userprofilepicture", userInfo.profile_picture.S);		 
+		   						    
+			   				    	window.location.replace("http://salesjobz.s3-website-us-west-2.amazonaws.com/jobs.html");
+
+		   						} else {
+		   						    alert("Sorry, your browser does not supported...");
+		   						}
+
+		   				    	}else{
+					    			alert("Invalid user!!!");
+					  			  }
+					  }); 
+		    	
+
+		    	
+		    	
+		    }else if(data.status == "error"){
+		    	if(data.message == "Wrong credentials!!!"){
+		    		alert("Wrong credentials!!!");
+		    	}
+		    	
+		    }else{
+		    	alert("SignUp failed");
+		    }
+		  }); 		
+		});
+</script>
 </body>
 </html>	

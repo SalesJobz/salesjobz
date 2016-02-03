@@ -42,7 +42,8 @@ public class SalesJobzFunctionHandler implements RequestHandler<Object, Object> 
      			break;
      			
      			case "signIn" :
-         			
+     				result = signIn(input);         			
+
      			break;
      			
      			case "signOut" :
@@ -82,6 +83,9 @@ public class SalesJobzFunctionHandler implements RequestHandler<Object, Object> 
 				"{"+
 						"    \"TableName\": \"Candidate\","+
 						"    \"Item\": {"+
+						"        \"user_type\": {"+
+						"            \"S\": \""+input.get("user_type")+"\""+
+						"        },"+
 						"        \"id\": {"+
 						"            \"S\": \""+input.get("id")+"\""+
 						"        },"+
@@ -96,6 +100,21 @@ public class SalesJobzFunctionHandler implements RequestHandler<Object, Object> 
 						"        },"+
 						"		 \"last_name\": {"+
 						"            \"S\": \""+input.get("last_name")+"\""+
+						"        },"+
+						"		 \"mobile_number\": {"+
+						"            \"S\": \"-\""+
+						"        },"+
+						"		 \"date_of_birth\": {"+
+						"            \"S\": \"-\""+
+						"        },"+
+						"		 \"education\": {"+
+						"            \"S\": \"-\""+
+						"        },"+
+						"		 \"resume\": {"+
+						"            \"S\": \"-\""+
+						"        },"+
+						"		 \"profile_picture\": {"+
+						"            \"S\": \"images/user-default.png\""+
 						"        }"+
 						"    }"+
 						"}";
@@ -224,6 +243,51 @@ public class SalesJobzFunctionHandler implements RequestHandler<Object, Object> 
 		 result.put("message", "Delete success!!!");	
 		 result.put("payload", payload);
 		 result.put("db_result", dbResult);	
+
+		return result;		
+	}
+	
+	private LinkedHashMap signIn(LinkedHashMap<String,String> input) throws Exception{
+		
+		String payload = 	
+				
+				"{"+
+						"    \"TableName\": \"Candidate\",";
+
+/*		String keyConditionExpression = "\"KeyConditionExpression\": \"email = :email\",";
+		String expressionAttributeValues = "\"ExpressionAttributeValues\": {\":email\": {\"S\": \""+input.get("id")+"\"}}";		*/
+		
+		
+		String keyConditionExpression = "\"KeyConditionExpression\": \"id = :id\",";
+		String filterExpression = "\"FilterExpression\": \"password = :password\",";
+		String expressionAttributeValues = "\"ExpressionAttributeValues\": {\":id\": {\"S\": \""+input.get("id")+"\"},\":password\": {\"S\": \""+input.get("access_token")+"\"}}";		
+	//	String expressionAttributeValues = "\"ExpressionAttributeValues\": {\":id\": {\"S\": \""+input.get("id")+"\"}}";		
+
+	
+		payload = payload + filterExpression+keyConditionExpression + expressionAttributeValues + "}";
+		
+		 String dbResult = DB.execute("Query", payload);
+
+		 if( "{}".equals(dbResult)){
+			 throw new Exception("Query failed!!! payload = "+payload+" db_result = "+dbResult);
+		 }
+
+			 LinkedHashMap<String, String> result = new LinkedHashMap<String, String>();
+		
+			 
+			String dbResultEx = dbResult.replaceAll("\\\"", "\"");
+			JSONObject jb = new JSONObject(dbResultEx);
+			if((int)jb.get("Count") == 0)
+			{
+				 result.put("status", "error");
+				 result.put("message", "Wrong credentials!!!");	
+			}else{
+				 result.put("status", "ok");
+				 result.put("message", "Signin success!!!");			
+			}
+			
+		
+
 
 		return result;		
 	}

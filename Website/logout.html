@@ -121,7 +121,6 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
 		      	<li id = "profile_picture_wrapper"><a href="profile.html"><img id="profile_picture"src="images/user-default.png" style="width:50px" alt=""/></a></li>
 		        <li id = "user_name_wrapper"><a href="profile.html"><span id = "user_name" ></span></a></li>
 		        <li id = "logout_wrapper"><a href="logout.html">Logout</a></li>
-		     
 	        </ul>
 	    </div>
 	    <div class="clearfix"> </div>
@@ -483,18 +482,30 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
   </div>
 </div>
 <script>
-if (localStorage.getItem("sj_userid") === null) {
+	if (typeof(Storage) !== "undefined") {
+		    // Store
+//	   						    localStorage.setItem("sj_usertype", em);
+		    localStorage.removeItem("sj_userid");
+		    localStorage.removeItem("sj_username");
+		    localStorage.removeItem("sj_userprofilepicture");			    
+	    
+
+		} else {
+		    alert("Sorry, your browser does not supported...");
+		}
 	
-	$("#profile_picture_wrapper").hide();
-	$("#user_name_wrapper").hide();
-	$("#logout_wrapper").hide();
-	}else{
-		$("#login_wrapper").hide();
-		$("#signup_wrapper").hide();		
-	
-		$("#user_name").text(localStorage.getItem("sj_username"));
-		$("#profile_picture").attr("src", localStorage.getItem("sj_userprofilepicture"));
-	}
+	if (localStorage.getItem("sj_userid") === null) {
+		
+		$("#profile_picture_wrapper").hide();
+		$("#user_name_wrapper").hide();
+		$("#logout_wrapper").hide();
+		}else{
+			$("#login_wrapper").hide();
+			$("#signup_wrapper").hide();		
+		
+			$("#user_name").text(localStorage.getItem("sj_username"));
+			$("#profile_picture").attr("src", localStorage.getItem("sj_userprofilepicture"));
+		}
 </script>
 </body>
 </html>	
